@@ -191,3 +191,60 @@ def format_country(country: dict[str, Any]) -> str:
             f"Currencies: {currency_text}",
         ]
     )
+
+def get_available_regions( countries: list[dict[str, Any]],) -> list[str]:
+    """Return the unique available regions in alphabetical order.
+
+    Args:
+        countries: Normalized country dictionaries.
+
+    Returns:
+        A sorted list of unique region names.
+    """
+    regions = set()
+
+    for country in countries:
+        region = country.get("region")
+
+        if (
+            isinstance(region, str)
+            and region.strip()
+            and region != "Not available"
+        ):
+            regions.add(region.strip())
+
+    return sorted(regions, key=str.casefold)
+
+
+def filter_countries_by_region(countries: list[dict[str, Any]],region: str,) -> list[dict[str, Any]]:
+    """Return countries belonging to the selected region.
+
+    Matching is case-insensitive.
+
+    Args:
+        countries: Normalized country dictionaries.
+        region: Region entered by the user.
+
+    Returns:
+        Countries in the selected region, sorted alphabetically.
+    """
+    normalized_region = region.strip().casefold()
+
+    if not normalized_region:
+        return []
+
+    matches = []
+
+    for country in countries:
+        country_region = country.get("region", "")
+
+        if (
+            isinstance(country_region, str)
+            and country_region.casefold() == normalized_region
+        ):
+            matches.append(country)
+
+    return sorted(
+        matches,
+        key=lambda country: country.get("name", "").casefold(),
+    )

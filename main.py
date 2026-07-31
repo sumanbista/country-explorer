@@ -5,6 +5,8 @@ from countries import (
     find_countries_by_name,
     format_country,
     transform_countries,
+    filter_countries_by_region,
+    get_available_regions
 )
 
 def display_search_results(matches: list[dict], ) -> None:
@@ -25,6 +27,24 @@ def display_search_results(matches: list[dict], ) -> None:
         print(format_country(country))
 
 
+def display_region_results(countries: list[dict],region: str,) -> None:
+    """Display countries belonging to a selected region.
+
+    Args:
+        countries: Countries matching the selected region.
+        region: Region entered by the user.
+    """
+    if not countries:
+        print(f"\nNo countries were found for the region '{region}'.")
+        return
+
+    print(f"\nFound {len(countries)} countries in {region.title()}:")
+
+    for index, country in enumerate(countries, start=1):
+        print(f"\nCountry {index}")
+        print("-" * 40)
+        print(format_country(country))
+
 
 def main() -> None:
     """Fetch country data and display a sample of the country data."""
@@ -43,38 +63,38 @@ def main() -> None:
 
     print(f"Successfully loaded {len(countries)} countries.")
 
-    search_term = input(
-        "\nEnter a full or partial country name: "
-    ).strip()
+    # search_term = input(
+    #     "\nEnter a full or partial country name: "
+    # ).strip()
 
-    if not search_term:
-        print("Please enter a country name.")
-        return
-
-    matches = find_countries_by_name(countries, search_term)
-    display_search_results(matches)
-
-    # if not countries:
-    #     print("No country data is available.")
+    # if not search_term:
+    #     print("Please enter a country name.")
     #     return
 
-    # sample_country = countries[0]
+    # matches = find_countries_by_name(countries, search_term)
+    # display_search_results(matches)
 
-    # print("\nSample country")
-    # print("-" * 30)
-    # print(f"Name: {sample_country['name']}")
-    # print(f"Capital: {sample_country['capital']}")
-    # print(f"Region: {sample_country['region']}")
-    # print(f"Population: {sample_country['population']:,}")
-    # print(f"Area: {sample_country['area']:,.2f} km²")
-    # print(
-    #     "Languages: "
-    #     + (", ".join(sample_country["languages"]) or "Not available")
-    # )
-    # print(
-    #     "Currencies: "
-    #     + (", ".join(sample_country["currencies"]) or "Not available")
-    # )
+    regions = get_available_regions(countries)
+
+    print("\nAvailable regions:")
+
+    for region in regions:
+        print(f"- {region}")
+
+    selected_region = input(
+        "\nEnter a region from the list above: "
+    ).strip()
+
+    if not selected_region:
+        print("Please enter a region.")
+        return
+
+    matches = filter_countries_by_region(
+        countries,
+        selected_region,
+    )
+
+    display_region_results(matches, selected_region)
 
 
 if __name__ == "__main__":
